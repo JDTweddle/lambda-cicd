@@ -26,10 +26,27 @@ jobs:
         run: |
           aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
 
-      - name: Deploy stack
+      - name: Deploy or Update Stack
         run: |
-          stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
-          aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test
+            stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
+            
+            # Check if the stack exists
+            if aws cloudformation describe-stacks --stack-name $stack_name 2>/dev/null; then
+              echo "Stack exists. Updating..."
+              aws cloudformation update-stack \
+                --stack-name $stack_name \
+                --template-body file://cloudformation/s3-bucket.yml \
+                --parameters ParameterKey=Environment,ParameterValue=test \
+                --capabilities CAPABILITY_NAMED_IAM
+            else
+              echo "Creating new stack..."
+              aws cloudformation create-stack \
+                --stack-name $stack_name \
+                --template-body file://cloudformation/s3-bucket.yml \
+                --parameters ParameterKey=Environment,ParameterValue=test \
+                --capabilities CAPABILITY_NAMED_IAM
+            fi
+        
 
       - name: Comment on the PR
         uses: actions/github-script@v6
