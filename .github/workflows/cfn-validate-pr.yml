@@ -26,12 +26,17 @@ jobs:
         run: |
           aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
 
-          
-
       - name: Deploy stack
         run: |
           stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
-          aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Environment,ParameterValue=test
+          aws cloudformation create-stack \
+            --stack-name $stack_name \
+            --template-body file://cloudformation/s3-bucket.yml \
+            --parameters ParameterKey=Environment,ParameterValue=test
+
+      - name: Wait for stack creation to complete
+        run: |
+          aws cloudformation wait stack-create-complete --stack-name $stack_name
 
       - name: Comment on the PR
         uses: actions/github-script@v6
@@ -60,3 +65,7 @@ jobs:
         run: |
           stack_name="pr-test-stack-${{ github.event.pull_request.number }}"
           aws cloudformation delete-stack --stack-name $stack_name
+
+      - name: Wait for stack deletion to complete
+        run: |
+          aws cloudformation wait stack-delete-complete --stack-name $stack_name
