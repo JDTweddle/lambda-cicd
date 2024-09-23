@@ -26,7 +26,7 @@ jobs:
               run: |
                   aws cloudformation validate-template --template-body file://cloudformation/s3-bucket.yml
 
-            - name: Deply stack
+            - name: Depoly stack
               run: |
                 stack_name"pr-test-stack-${{ github.event.pull_request.number }}"
                 aws cloudformation create-stack --stack-name $stack_name --template-body file://cloudformation/s3-bucket.yml --parameters ParameterKey=Enviroment,ParameterValue=test
