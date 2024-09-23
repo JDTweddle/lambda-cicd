@@ -22,4 +22,4 @@ Resources:
 Outputs:
   S3BucketName:
     Description: The name of the S3 bucket
-    Value: !Ref S3Bucket
+    Value: !Ref lambda-cicd-patchez
