@@ -9,18 +9,17 @@ Parameters:
       - test
       - staging
       - production
-      
+
 Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties:
-     BucketName: !Sub '${AWS::StackName}-${Environment}-bucket'
-    
+      BucketName: !Sub '${AWS::StackName}-${Environment}-bucket'
     Tags:
-    - Key: Environment
-      Value: !Ref Environment
+      - Key: Environment
+        Value: !Ref Environment
 
-  Outputs:
-    S3BucketName:
-      Description: The name of the S3 bucket
-      Value: !Ref S3Bucket.BucketName
+Outputs:
+  S3BucketName:
+    Description: The name of the S3 bucket
+    Value: !Ref S3Bucket
